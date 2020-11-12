@@ -12,4 +12,6 @@ locals {
   jenkins-x-namespace    = "jx"
   cluster_trunc          = substr(var.cluster_name, 0, 40)
   cert-manager-namespace = "cert-manager"
+// rajat
+  subnets = (var.cluster_in_private_subnet ? module.vpc.private_subnets : module.vpc.public_subnets)
 }

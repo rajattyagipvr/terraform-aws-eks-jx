@@ -56,10 +56,6 @@ module "vpc" {
   }
 }
 
-locals {
-  subnets = (var.cluster_in_private_subnet ? module.vpc.private_subnets : module.vpc.public_subnets)
-}
-  
   
 // ----------------------------------------------------------------------------
 // Create the EKS cluster with extra EC2ContainerRegistryPowerUser policy
