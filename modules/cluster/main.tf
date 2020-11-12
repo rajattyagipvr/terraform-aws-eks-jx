@@ -57,7 +57,7 @@ module "vpc" {
 }
 
 locals {
-  subnets = []
+  subnets = (var.cluster_in_private_subnet ? module.vpc.private_subnets : module.vpc.public_subnets)
 }
   
   
@@ -71,7 +71,6 @@ module "eks" {
   create_eks      = var.create_eks
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
-  local.subnets         = (var.cluster_in_private_subnet ? module.vpc.private_subnets : module.vpc.public_subnets)
   subnets         = local.subnets
   vpc_id          = module.vpc.vpc_id
   enable_irsa     = true
