@@ -71,7 +71,7 @@ module "eks" {
   enable_irsa     = true
 
   worker_groups_launch_template = var.enable_worker_group && var.enable_worker_groups_launch_template ? [
-    for subnet in module.vpc.public_subnets :
+    for subnet in subnets :
     {
       subnets                 = [subnet]
       asg_desired_capacity    = var.lt_desired_nodes_per_subnet
@@ -82,7 +82,7 @@ module "eks" {
       root_encrypted          = var.encrypt_volume_self
       override_instance_types = var.allowed_spot_instance_types
       autoscaling_enabled     = "true"
-      public_ip               = true
+      public_ip               = (var.cluster_in_private_subnet ? false : true)
       tags = [
         {
           key                 = "k8s.io/cluster-autoscaler/enabled"
