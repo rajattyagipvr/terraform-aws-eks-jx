@@ -56,6 +56,11 @@ module "vpc" {
   }
 }
 
+locals {
+  subnets = []
+}
+  
+  
 // ----------------------------------------------------------------------------
 // Create the EKS cluster with extra EC2ContainerRegistryPowerUser policy
 // See https://github.com/terraform-aws-modules/terraform-aws-eks
@@ -66,12 +71,13 @@ module "eks" {
   create_eks      = var.create_eks
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
-  subnets         = (var.cluster_in_private_subnet ? module.vpc.private_subnets : module.vpc.public_subnets)
+  local.subnets         = (var.cluster_in_private_subnet ? module.vpc.private_subnets : module.vpc.public_subnets)
+  subnets         = local.subnets
   vpc_id          = module.vpc.vpc_id
   enable_irsa     = true
-
+  
   worker_groups_launch_template = var.enable_worker_group && var.enable_worker_groups_launch_template ? [
-    for subnet in (var.cluster_in_private_subnet ? module.vpc.private_subnets : module.vpc.public_subnets) :
+    for subnet in local.subnets :
     {
       subnets                 = [subnet]
       asg_desired_capacity    = var.lt_desired_nodes_per_subnet
