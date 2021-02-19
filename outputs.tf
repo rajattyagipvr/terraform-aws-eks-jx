@@ -76,6 +76,11 @@ output "cluster_autoscaler_iam_role" {
   description = "The IAM Role that the Jenkins X UI pod will assume to authenticate"
 }
 
+output "pipeline_viz_iam_role" {
+  value       = module.cluster.pipeline_viz_iam_role
+  description = "The IAM Role that the pipeline visualizer pod will assume to authenticate"
+}
+
 // ----------------------------------------------------------------------------
 // Vault Resources
 // ----------------------------------------------------------------------------
@@ -102,6 +107,13 @@ output "vault_user_id" {
 output "vault_user_secret" {
   value       = length(module.vault.vault_user_secret) > 0 ? module.vault.vault_user_secret[0] : ""
   description = "The Vault IAM user secret"
+}
+
+// ----------------------------------------------------------------------------
+// DNS
+// ----------------------------------------------------------------------------
+output "subdomain_nameservers" {
+  value = module.dns.subdomain_nameservers
 }
 
 // ----------------------------------------------------------------------------

@@ -110,6 +110,9 @@ module "eks-jx" {
 ```
 
 You should have your [AWS CLI configured correctly](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
+
+#### AWS_REGION
+
 In addition, you should make sure to specify the region via the AWS_REGION environment variable. e.g. 
 `export AWS_REGION=us-east-1` and the region variable (make sure the region variable matches the environment variable)
 
@@ -144,8 +147,10 @@ The following sections provide a full list of configuration in- and output varia
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| additional\_tekton\_role\_policy\_arns | Additional Policy ARNs to attach to Tekton IRSA Role | `list(string)` | `[]` | no |
 | allowed\_spot\_instance\_types | Allowed machine types for spot instances (must be same size) | `any` | `[]` | no |
 | apex\_domain | The main domain to either use directly or to configure a subdomain from | `string` | `""` | no |
+| cluster\_encryption\_config | Configuration block with encryption configuration for the cluster. | <pre>list(object({<br>    provider_key_arn = string<br>    resources        = list(string)<br>  }))</pre> | `[]` | no |
 | cluster\_endpoint\_private\_access | Indicates whether or not the Amazon EKS private API server endpoint is enabled. | `bool` | `false` | no |
 | cluster\_endpoint\_private\_access\_cidrs | List of CIDR blocks which can access the Amazon EKS private API server endpoint, when public access is disabled. | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
 | cluster\_endpoint\_public\_access | Indicates whether or not the Amazon EKS public API server endpoint is enabled. | `bool` | `true` | no |
@@ -154,7 +159,16 @@ The following sections provide a full list of configuration in- and output varia
 | cluster\_name | Variable to provide your desired name for the cluster. The script will create a random name if this is empty | `string` | `""` | no |
 | cluster\_version | Kubernetes version to use for the EKS cluster. | `string` | `"1.17"` | no |
 | create\_and\_configure\_subdomain | Flag to create an NS record set for the subdomain in the apex domain's Hosted Zone | `bool` | `false` | no |
+| create\_autoscaler\_role | Flag to control cluster autoscaler iam role creation | `bool` | `true` | no |
+| create\_bucketrepo\_role | Flag to control bucketrepo role | `bool` | `true` | no |
+| create\_cm\_role | Flag to control cert manager iam role creation | `bool` | `true` | no |
+| create\_cmcainjector\_role | Flag to control cert manager ca-injector iam role creation | `bool` | `true` | no |
+| create\_ctrlb\_role | Flag to control controller build iam role creation | `bool` | `true` | no |
 | create\_eks | Controls if EKS cluster and associated resources should be created or not. If you have an existing eks cluster for jx, set it to false | `bool` | `true` | no |
+| create\_exdns\_role | Flag to control external dns iam role creation | `bool` | `true` | no |
+| create\_pipeline\_vis\_role | Flag to control pipeline visualizer role | `bool` | `true` | no |
+| create\_tekton\_role | Flag to control tekton iam role creation | `bool` | `true` | no |
+| create\_velero\_role | Flag to control velero iam role creation | `bool` | `true` | no |
 | create\_vpc | Controls if VPC and related resources should be created. If you have an existing vpc for jx, set it to false | `bool` | `true` | no |
 | desired\_node\_count | The number of worker nodes to use for the cluster | `number` | `3` | no |
 | enable\_backup | Whether or not Velero backups should be enabled | `bool` | `false` | no |
@@ -182,6 +196,8 @@ The following sections provide a full list of configuration in- and output varia
 | lt\_desired\_nodes\_per\_subnet | The number of worker nodes in each Subnet (AZ) if using Launch Templates | `number` | `1` | no |
 | lt\_max\_nodes\_per\_subnet | The maximum number of worker nodes in each Subnet (AZ) if using Launch Templates | `number` | `2` | no |
 | lt\_min\_nodes\_per\_subnet | The minimum number of worker nodes in each Subnet (AZ) if using Launch Templates | `number` | `1` | no |
+| manage\_apex\_domain | Flag to control if apex domain should be managed/updated by this module. Set this to false,if your apex domain is managed in a different AWS account or different provider | `bool` | `true` | no |
+| manage\_subdomain | Flag to control subdomain creation/management | `bool` | `true` | no |
 | map\_accounts | Additional AWS account numbers to add to the aws-auth configmap. | `list(string)` | `[]` | no |
 | map\_roles | Additional IAM roles to add to the aws-auth configmap. | <pre>list(object({<br>    rolearn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
 | map\_users | Additional IAM users to add to the aws-auth configmap. | <pre>list(object({<br>    userarn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
@@ -208,6 +224,7 @@ The following sections provide a full list of configuration in- and output varia
 | velero\_namespace | Kubernetes namespace for Velero | `string` | `"velero"` | no |
 | velero\_schedule | The Velero backup schedule in cron notation to be set in the Velero Schedule CRD (see [default-backup.yaml](https://github.com/jenkins-x/jenkins-x-boot-config/blob/master/systems/velero-backups/templates/default-backup.yaml)) | `string` | `"0 * * * *"` | no |
 | velero\_ttl | The the lifetime of a velero backup to be set in the Velero Schedule CRD (see [default-backup.yaml](https://github.com/jenkins-x/jenkins-x-boot-config/blob/master/systems/velero-backups/templates/default-backup)) | `string` | `"720h0m0s"` | no |
+| velero\_username | The username to be assigned to the Velero IAM user | `string` | `"velero"` | no |
 | volume\_size | The volume size in GB | `number` | `50` | no |
 | volume\_type | The volume type to use. Can be standard, gp2 or io1 | `string` | `"gp2"` | no |
 | vpc\_cidr\_block | The vpc CIDR block | `string` | `"10.0.0.0/16"` | no |
@@ -230,6 +247,8 @@ The following sections provide a full list of configuration in- and output varia
 | lts\_logs\_bucket | The bucket where logs from builds will be stored |
 | lts\_reports\_bucket | The bucket where test reports will be stored |
 | lts\_repository\_bucket | The bucket that will serve as artifacts repository |
+| pipeline\_viz\_iam\_role | The IAM Role that the pipeline visualizer pod will assume to authenticate |
+| subdomain\_nameservers | ---------------------------------------------------------------------------- DNS ---------------------------------------------------------------------------- |
 | tekton\_bot\_iam\_role | The IAM Role that the build pods will assume to authenticate |
 | vault\_dynamodb\_table | The Vault DynamoDB table |
 | vault\_kms\_unseal | The Vault KMS Key for encryption |
@@ -648,6 +667,7 @@ It is very common to have another module used to create EKS clusters for all you
 set `create_eks` and `create_vpc` to false and `cluster_name` to the id/name of the EKS cluster where jx components 
 need to be installed in.
 This will prevent creating a new vpc and eks cluster for jx.
+There are also flags to control the creation of IAM roles.
 See [this](./examples/existing-cluster) for a complete example.
 
 ### Examples

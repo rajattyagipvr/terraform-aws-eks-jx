@@ -61,6 +61,12 @@ variable "velero_ttl" {
   default     = "720h0m0s"
 }
 
+variable "velero_username" {
+  description = "The username to be assigned to the Velero IAM user"
+  type        = string
+  default     = "velero"
+}
+
 // ----------------------------------------------------------------------------
 // Worker Nodes Variables
 // ----------------------------------------------------------------------------
@@ -435,4 +441,85 @@ variable "encrypt_volume_self" {
   description = "Encrypt the ebs and root volume for the self managed worker nodes. This is only valid for the worker group launch template"
   type        = bool
   default     = false
+}
+
+variable "cluster_encryption_config" {
+  description = "Configuration block with encryption configuration for the cluster."
+  type = list(object({
+    provider_key_arn = string
+    resources        = list(string)
+  }))
+  default = []
+}
+
+variable "create_tekton_role" {
+  description = "Flag to control tekton iam role creation"
+  type        = bool
+  default     = true
+}
+
+variable "create_exdns_role" {
+  description = "Flag to control external dns iam role creation"
+  type        = bool
+  default     = true
+}
+
+variable "create_cm_role" {
+  description = "Flag to control cert manager iam role creation"
+  type        = bool
+  default     = true
+}
+
+variable "create_cmcainjector_role" {
+  description = "Flag to control cert manager ca-injector iam role creation"
+  type        = bool
+  default     = true
+}
+
+variable "create_ctrlb_role" {
+  description = "Flag to control controller build iam role creation"
+  type        = bool
+  default     = true
+}
+
+variable "create_autoscaler_role" {
+  description = "Flag to control cluster autoscaler iam role creation"
+  type        = bool
+  default     = true
+}
+
+variable "create_velero_role" {
+  description = "Flag to control velero iam role creation"
+  type        = bool
+  default     = true
+}
+
+variable "manage_apex_domain" {
+  description = "Flag to control if apex domain should be managed/updated by this module. Set this to false,if your apex domain is managed in a different AWS account or different provider"
+  default     = true
+  type        = bool
+}
+
+variable "manage_subdomain" {
+  description = "Flag to control subdomain creation/management"
+  default     = true
+  type        = bool
+}
+
+variable "create_pipeline_vis_role" {
+  description = "Flag to control pipeline visualizer role"
+  type        = bool
+  default     = true
+}
+
+variable "create_bucketrepo_role" {
+  description = "Flag to control bucketrepo role"
+  type        = bool
+  default     = true
+}
+
+variable "additional_tekton_role_policy_arns" {
+  description = "Additional Policy ARNs to attach to Tekton IRSA Role"
+  type        = list(string)
+  default     = []
 }

@@ -20,8 +20,6 @@ provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
   token                  = data.aws_eks_cluster_auth.cluster.token
-  load_config_file       = false
-  version                = "1.11.1"
 }
 
 // ----------------------------------------------------------------------------
@@ -30,7 +28,7 @@ provider "kubernetes" {
 // ----------------------------------------------------------------------------
 module "vpc" {
   source               = "terraform-aws-modules/vpc/aws"
-  version              = "2.46.0"
+  version              = "~> 2.70"
   create_vpc           = var.create_vpc
   name                 = var.vpc_name
   cidr                 = var.vpc_cidr_block
@@ -63,7 +61,7 @@ module "vpc" {
 // ----------------------------------------------------------------------------
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
-  version         = "12.1.0"
+  version         = "~> 14.0"
   create_eks      = var.create_eks
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
@@ -99,7 +97,7 @@ module "eks" {
     }
   ] : []
 
-  worker_groups = var.enable_worker_group && ! var.enable_worker_groups_launch_template ? [
+  worker_groups = var.enable_worker_group && !var.enable_worker_groups_launch_template ? [
     {
       name                 = "worker-group-${var.cluster_name}"
       instance_type        = var.node_machine_type
@@ -126,7 +124,7 @@ module "eks" {
     }
   ] : []
 
-  node_groups = ! var.enable_worker_group ? {
+  node_groups = !var.enable_worker_group ? {
     eks-jx-node-group = {
       ami_type         = var.node_group_ami
       disk_size        = var.node_group_disk_size
@@ -155,6 +153,7 @@ module "eks" {
   map_accounts                    = var.map_accounts
   cluster_endpoint_private_access = var.cluster_endpoint_private_access
   cluster_endpoint_public_access  = var.cluster_endpoint_public_access
+  cluster_encryption_config       = var.cluster_encryption_config
 }
 
 // ----------------------------------------------------------------------------

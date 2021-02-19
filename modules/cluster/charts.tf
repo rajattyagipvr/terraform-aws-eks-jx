@@ -1,7 +1,5 @@
 resource "helm_release" "jx-git-operator" {
-  count = var.is_jx2 ? 0 : 1
-
-  provider         = helm
+  count            = var.is_jx2 ? 0 : 1
   name             = "jx-git-operator"
   chart            = "jx-git-operator"
   namespace        = "jx-git-operator"
@@ -24,7 +22,7 @@ resource "helm_release" "jx-git-operator" {
     name  = "username"
     value = var.jx_bot_username
   }
-  set {
+  set_sensitive {
     name  = "password"
     value = var.jx_bot_token
   }

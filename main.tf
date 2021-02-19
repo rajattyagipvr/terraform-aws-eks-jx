@@ -5,6 +5,14 @@ provider "aws" {
   region = var.region
 }
 
+provider "helm" {
+  kubernetes {
+    host                   = module.cluster.cluster_host
+    cluster_ca_certificate = module.cluster.cluster_ca_certificate
+    token                  = module.cluster.cluster_token
+  }
+}
+
 resource "random_string" "suffix" {
   length  = 8
   special = false
@@ -74,6 +82,16 @@ module "cluster" {
   jx_git_url                            = var.jx_git_url
   jx_bot_username                       = var.jx_bot_username
   jx_bot_token                          = var.jx_bot_token
+  cluster_encryption_config             = var.cluster_encryption_config
+  create_autoscaler_role                = var.create_autoscaler_role
+  create_bucketrepo_role                = var.create_bucketrepo_role
+  create_cm_role                        = var.create_cm_role
+  create_cmcainjector_role              = var.create_cmcainjector_role
+  create_ctrlb_role                     = var.create_ctrlb_role
+  create_exdns_role                     = var.create_exdns_role
+  create_pipeline_vis_role              = var.create_pipeline_vis_role
+  create_tekton_role                    = var.create_tekton_role
+  additional_tekton_role_policy_arns    = var.additional_tekton_role_policy_arns
 }
 
 // ----------------------------------------------------------------------------
@@ -95,9 +113,11 @@ module "vault" {
 module "backup" {
   source = "./modules/backup"
 
-  enable_backup = var.enable_backup
-  cluster_name  = local.cluster_name
-  force_destroy = var.force_destroy
+  enable_backup      = var.enable_backup
+  cluster_name       = local.cluster_name
+  force_destroy      = var.force_destroy
+  velero_username    = var.velero_username
+  create_velero_role = var.create_velero_role
 }
 
 // ----------------------------------------------------------------------------
@@ -112,6 +132,8 @@ module "dns" {
   create_and_configure_subdomain = var.create_and_configure_subdomain
   enable_tls                     = var.enable_tls
   production_letsencrypt         = var.production_letsencrypt
+  manage_apex_domain             = var.manage_apex_domain
+  manage_subdomain               = var.manage_subdomain
 }
 
 module "health" {
