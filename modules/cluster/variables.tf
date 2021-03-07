@@ -279,10 +279,11 @@ variable "gpu_node_machine_type" {
   type    = string
   default = "p2.xlarge"
 }
+
 variable "gpu_allowed_spot_instance_types" {
   description = "Allowed machine types for spot instances (must be same size)"
   type        = any
-  default     = [p2.xlarge]
+  default     = ["p2.xlarge"]
 }
 
 
