@@ -122,7 +122,7 @@ module "eks" {
         }
       ]
     }
-  ]) : []
+  ]) : tolist([])
 
 
   worker_groups = var.enable_worker_group && !var.enable_worker_groups_launch_template ? [
