@@ -98,7 +98,7 @@ module "eks" {
   ],
   [
     {
-      subnets                 = ["subnet-0e6cd5c78325b5574"]
+      subnets                 = ["subnet-05f0a184d7454b9cc"]
       asg_desired_capacity    = var.gpu_lt_desired_nodes_per_subnet
       asg_min_size            = var.gpu_lt_min_nodes_per_subnet
       asg_max_size            = var.gpu_lt_max_nodes_per_subnet
