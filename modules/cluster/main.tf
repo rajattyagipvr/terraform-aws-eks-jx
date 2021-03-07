@@ -95,6 +95,30 @@ module "eks" {
         }
       ]
     }
+    {
+      subnets                 = [subnet]
+      asg_desired_capacity    = var.gpu_lt_desired_nodes_per_subnet
+      asg_min_size            = var.gpu_lt_min_nodes_per_subnet
+      asg_max_size            = var.gpu_lt_max_nodes_per_subnet
+      spot_price              = (var.enable_spot_instances ? var.spot_price : null)
+      instance_type           = var.gpu_node_machine_type
+      root_encrypted          = var.encrypt_volume_self
+      override_instance_types = var.gpu_allowed_spot_instance_types
+      autoscaling_enabled     = "true"
+      public_ip               = (var.cluster_in_private_subnet ? false : true)
+      tags = [
+        {
+          key                 = "k8s.io/cluster-autoscaler/enabled"
+          propagate_at_launch = "false"
+          value               = "true"
+        },
+        {
+          key                 = "k8s.io/cluster-autoscaler/${var.cluster_name}"
+          propagate_at_launch = "false"
+          value               = "true"
+        }
+      ]
+    }
   ] : []
 
   worker_groups = var.enable_worker_group && !var.enable_worker_groups_launch_template ? [

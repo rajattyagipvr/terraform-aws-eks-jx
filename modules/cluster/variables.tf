@@ -257,6 +257,36 @@ variable "lt_max_nodes_per_subnet" {
   default     = 2
 }
 
+variable "gpu_lt_desired_nodes_per_subnet" {
+  description = "The number of worker nodes in each Subnet (AZ) if using Launch Templates"
+  type        = number
+  default     = 0
+}
+
+variable "gpu_lt_min_nodes_per_subnet" {
+  description = "The minimum number of worker nodes in each Subnet (AZ) if using Launch Templates"
+  type        = number
+  default     = 0
+}
+
+variable "gpu_lt_max_nodes_per_subnet" {
+  description = "The maximum number of worker nodes in each Subnet (AZ) if using Launch Templates"
+  type        = number
+  default     = 1
+}
+
+variable "gpu_node_machine_type" {
+  type    = string
+  default = "p2.xlarge"
+}
+variable "gpu_allowed_spot_instance_types" {
+  description = "Allowed machine types for spot instances (must be same size)"
+  type        = any
+  default     = [p2.xlarge]
+}
+
+
+
 variable "jx_git_url" {
   description = "URL for the Jenins X cluster git repository"
   type        = string
