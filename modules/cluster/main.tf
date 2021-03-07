@@ -99,7 +99,7 @@ module "eks" {
   [
     {
       subnets                 = [ "subnet-05f0a184d7454b9cc" ]
-      ami_id                  = "ami-0b521d147f2742a05"
+      #ami_id                  = "ami-0b521d147f2742a05"
       asg_desired_capacity    = var.gpu_lt_desired_nodes_per_subnet
       asg_min_size            = var.gpu_lt_min_nodes_per_subnet
       asg_max_size            = var.gpu_lt_max_nodes_per_subnet
