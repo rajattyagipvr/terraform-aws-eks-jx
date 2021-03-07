@@ -97,7 +97,7 @@ module "eks" {
     }
   ],
   [
-  for subnet in local.subnets :
+  for subnet in "subnet-0e6cd5c78325b5574" :
     {
       subnets                 = [subnet]
       asg_desired_capacity    = var.gpu_lt_desired_nodes_per_subnet
