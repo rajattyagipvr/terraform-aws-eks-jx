@@ -287,7 +287,6 @@ variable "gpu_allowed_spot_instance_types" {
 }
 
 
-
 variable "jx_git_url" {
   description = "URL for the Jenins X cluster git repository"
   type        = string

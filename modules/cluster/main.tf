@@ -69,7 +69,7 @@ module "eks" {
   vpc_id          = module.vpc.vpc_id
   enable_irsa     = true
   
-  worker_groups_launch_template = !var.enable_worker_group && var.enable_worker_groups_launch_template ? [
+  worker_groups_launch_template = !var.enable_worker_group && var.enable_worker_groups_launch_template ? concat([
     for subnet in local.subnets :
     {
       subnets                 = [subnet]
@@ -95,11 +95,9 @@ module "eks" {
         }
       ]
     }
-  ] : []
-
-
-  gpu_worker_groups_launch_template = !var.enable_worker_group && var.enable_worker_groups_launch_template ? [
-    for subnet in local.subnets :
+  ],
+  [
+  for subnet in local.subnets :
     {
       subnets                 = [subnet]
       asg_desired_capacity    = var.gpu_lt_desired_nodes_per_subnet
@@ -124,7 +122,7 @@ module "eks" {
         }
       ]
     }
-  ] : []
+  ]) : []
 
 
   worker_groups = var.enable_worker_group && !var.enable_worker_groups_launch_template ? [
