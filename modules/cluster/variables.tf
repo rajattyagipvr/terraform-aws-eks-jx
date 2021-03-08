@@ -254,7 +254,7 @@ variable "lt_min_nodes_per_subnet" {
 variable "lt_max_nodes_per_subnet" {
   description = "The maximum number of worker nodes in each Subnet (AZ) if using Launch Templates"
   type        = number
-  default     = 2
+  default     = 4
 }
 
 variable "gpu_lt_desired_nodes_per_subnet" {
@@ -272,7 +272,7 @@ variable "gpu_lt_min_nodes_per_subnet" {
 variable "gpu_lt_max_nodes_per_subnet" {
   description = "The maximum number of worker nodes in each Subnet (AZ) if using Launch Templates"
   type        = number
-  default     = 1
+  default     = 4
 }
 
 variable "gpu_node_machine_type" {
